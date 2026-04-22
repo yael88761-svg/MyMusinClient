@@ -1,17 +1,29 @@
+/* האפליקציה כולה - מבנה של עמודה (Navbar למעלה, Content למטה) */
 .app-container {
   min-height: 100vh;
-  background-color: #121212; /* צבע רקע כהה לכל האפליקציה */
+  background-color: #121212;
   color: white;
-}
-
-.content {
-  padding: 40px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
-/* עיצוב כללי לטפסים שיהיו במרכז */
+/* התוכן המשתנה - כאן נכנסת הספרייה או דפי הרישום */
+.content {
+  flex: 1; /* ממלא את כל הגובה שנותר */
+  display: flex;
+  /* שים לב: הסרנו מפה את ה-justify-content: center כדי שהספרייה תוכל להיצמד לצדדים */
+}
+
+/* קונטיינר מיוחד לדפי לוגין וסיינאפ - מחזיר אותם למרכז */
+.auth-container {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* ממרכז אופקית */
+  align-items: flex-start; /* מצמיד למעלה עם קצת מרווח */
+  padding-top: 50px;
+}
+
+/* עיצוב הטפסים (Login/Signup) */
 form {
   background-color: #181818;
   padding: 30px;
@@ -23,6 +35,7 @@ form {
   width: 350px;
 }
 
+/* שדות קלט */
 input {
   padding: 12px;
   border-radius: 4px;
@@ -31,6 +44,7 @@ input {
   color: white;
 }
 
+/* כפתור ירוק ספוטיפיי */
 button {
   padding: 12px;
   background-color: #1DB954;

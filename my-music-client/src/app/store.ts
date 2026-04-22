@@ -1,21 +1,26 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { userApi } from '../features/user/userApi'; // ודאי שהנתיב לתיקייה נכון
+import { userApi } from '../features/user/userApi';
 import userReducer from '../features/user/userSlice';
+import { playlistApi } from '../features/playlist/playlistApi';
+// 1. ייבוא של ה-songSlice
+import songReducer from '../features/song/songSlice'; 
 
 export const store = configureStore({
   reducer: {
-    // 1. ה-Reducer של הסלייס (מצב המשתמש)
+    // ה-Reducers של הסלייסים (מצב מקומי)
     user: userReducer,
+    song: songReducer, // 2. הוספת הסלייס של השיר לכאן
     
-    // 2. ה-Reducer של ה-API (ניהול הקריאות לשרת)
+    // ה-Reducers של ה-API (תקשורת עם השרת)
     [userApi.reducerPath]: userApi.reducer,
+    [playlistApi.reducerPath]: playlistApi.reducer,
   },
   
-  // 3. הוספת ה-Middleware של ה-API - חובה כדי ש-RTK Query יעבוד
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware),
+    getDefaultMiddleware()
+      .concat(userApi.middleware)
+      .concat(playlistApi.middleware),
 });
 
-// הגדרות סוגים עבור TypeScript (מומלץ מאוד)
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
