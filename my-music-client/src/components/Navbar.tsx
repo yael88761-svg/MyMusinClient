@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'; // בהנחה שאת משתמשת ב-React Router
-import { RootState } from '../app/store'; // הנתיב לסטור שלך
+import type { RootState } from '../app/store.ts'; // הנתיב לסטור שלך
 import { logout } from '../features/user/userSlice'; // הפעולה ליציאה מהמערכת
 import './Navbar.css'; // נוסיף קצת עיצוב למטה
 

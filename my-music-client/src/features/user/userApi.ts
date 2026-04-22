@@ -13,7 +13,7 @@ export const userApi = createApi({
     }),
     signup: builder.mutation({
       query: (newUser) => ({
-        url: '/User', 
+        url: '/User/register', // ודאי ב-Swagger שזה הנתיב
         method: 'POST',
         body: newUser,
       }),
