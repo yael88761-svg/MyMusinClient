@@ -1,10 +1,20 @@
-// בתוך ה-endpoints של ה-API שלכם
-uploadSong: builder.mutation({
-  query: (formData) => ({
-    url: 'Song/upload-music',
-    method: 'POST',
-    body: formData, // FormData כולל את הקובץ ואת ה-PlaylistId
-    // חשוב: RTK Query יודע לזהות FormData ולא לשים Content-Type ידני
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+// songApi.ts
+export const songApi = createApi({
+  reducerPath: 'songApi',
+  baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:5270/api/'}),
+  tagTypes: ['Playlists'], // חשוב להשתמש באותה מילה בדיוק כמו ב-playlistApi
+  endpoints: (builder) => ({
+    uploadSong: builder.mutation({
+      query: (formData) => ({
+        url: 'Song/upload-music',
+        method: 'POST',
+        body: formData,
+      }),
+      // התיקון הקריטי: זה יגרום ל-getPlaylists ב-LibraryPage לרוץ מחדש אוטומטית
+      invalidatesTags: ['Playlists'], 
+    }),
   }),
-  invalidatesTags: ['Playlists'], // כדי שהשיר החדש יופיע מיד בטבלה
-}),
+});
+
+export const { useUploadSongMutation } = songApi;

@@ -1,10 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // ייבוא לשימוש ב-Redux
-import { useGetPlaylistsQuery, useCreatePlaylistMutation, useUploadSongMutation } from '../features/playlist/playlistApi';
-import { setCurrentSong } from '../features/song/songSlice'; // ייבוא האקשן מהסלייס
-import type { RootState } from '../app/store'; // ייבוא הסוג של הסטייט
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetPlaylistsQuery, useCreatePlaylistMutation } from '../features/playlist/playlistApi';
 
-// ספריות עיצוב
+// התיקון כאן: מייבאים את העלאת השיר מה-API הנכון
+import { useUploadSongMutation } from '../features/song/songApi'; 
+
+import { setCurrentSong } from '../features/song/songSlice';
+import type { RootState } from '../app/store';
+
+// ספריות עיצוב... (ללא שינוי)// ספריות עיצוב
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { Plus, Music, Upload, Play, Library } from 'lucide-react';
 
@@ -39,9 +43,9 @@ const LibraryPage = () => {
         if (!file || !selectedPlaylist) return;
 
         const formData = new FormData();
-        formData.append('SongFile', file);
-        formData.append('PlaylistId', selectedPlaylist.playlistId.toString());
-        formData.append('Title', file.name.split('.')[0]);
+        formData.append('file', file);
+       // formData.append('PlaylistId', selectedPlaylist.playlistId.toString());
+       // formData.append('Title', file.name.split('.')[0]);
 
         try {
             await uploadSong(formData).unwrap();

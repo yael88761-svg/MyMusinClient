@@ -2,11 +2,14 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const playlistApi = createApi({
   reducerPath: 'playlistApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5270/api/',
-    // פונקציה שרצה לפני כל בקשה ומזריקה את הטוקן
+  baseQuery: fetchBaseQuery({ 
+    // הוספת לוכסן בסוף ה-baseUrl לדיוק בנתיבים
+    baseUrl: 'http://localhost:5270/api/', 
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token'); // או מאיפה שאתה שומר את הטוקן
+      // שליפת הטוקן מהאחסון המקומי
+      const token = localStorage.getItem('token');
+      
+      // אם קיים טוקן, הזרקתו ל-Header תחת Authorization בפורמט Bearer
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
@@ -15,9 +18,9 @@ export const playlistApi = createApi({
   }),
   tagTypes: ['Playlists'],
   endpoints: (builder) => ({
-    // שליפת הפלייליסטים של המשתמש המחובר (לפי הטוקן)
+    // שליפת הפלייליסטים של המשתמש המחובר
     getPlaylists: builder.query<any, void>({
-      query: () => 'Playlist/my-playlists', // הכתובת מהסווגר שלך
+      query: () => 'Playlist/my-playlists',
       providesTags: ['Playlists'],
     }),
     
@@ -30,17 +33,8 @@ export const playlistApi = createApi({
       }),
       invalidatesTags: ['Playlists'],
     }),
-    // תוסיפי את זה בתוך ה-endpoints של playlistApi
-uploadSong: builder.mutation({
-  query: (formData) => ({
-    url: 'Song/upload-music', // ודאי שזה הנתיב המדויק מהסווגר שלך
-    method: 'POST',
-    body: formData,
-  }),
-  // זה יגרום ל-RTK Query לרענן את הפלייליסט ולהציג את השיר החדש מיד
-  invalidatesTags: ['Playlists'], 
-}),
   }),
 });
 
-export const { useGetPlaylistsQuery, useCreatePlaylistMutation, useUploadSongMutation } = playlistApi;
+// ייצוא ה-Hooks לשימוש בקומפוננטות
+export const { useGetPlaylistsQuery, useCreatePlaylistMutation } = playlistApi;
