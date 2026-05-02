@@ -2,13 +2,13 @@ import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetPlaylistsQuery, useCreatePlaylistMutation } from '../features/playlist/playlistApi';
 
-// התיקון כאן: מייבאים את העלאת השיר מה-API הנכון
+// ייבוא המוטציה המעודכנת
 import { useUploadSongMutation } from '../features/song/songApi'; 
 
 import { setCurrentSong } from '../features/song/songSlice';
 import type { RootState } from '../app/store';
 
-// ספריות עיצוב... (ללא שינוי)// ספריות עיצוב
+// ספריות עיצוב
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { Plus, Music, Upload, Play, Library } from 'lucide-react';
 
@@ -17,9 +17,10 @@ import './LibraryPage.css';
 const LibraryPage = () => {
     const dispatch = useDispatch();
     
-    // 1. שימוש ב-Redux במקום ב-useState מקומי עבור השיר
+    // שימוש ב-Redux עבור השיר המושמע כעת
     const currentSong = useSelector((state: RootState) => state.song.currentSong);
     
+    // שליפת הנתונים מה-API
     const { data: playlists, isLoading, error } = useGetPlaylistsQuery(); 
     const [createPlaylist] = useCreatePlaylistMutation();
     const [uploadSong] = useUploadSongMutation();
@@ -44,11 +45,16 @@ const LibraryPage = () => {
 
         const formData = new FormData();
         formData.append('file', file);
-       // formData.append('PlaylistId', selectedPlaylist.playlistId.toString());
-       // formData.append('Title', file.name.split('.')[0]);
+        // שליחת ה-ID של הפלייליסט הנוכחי יחד עם הקובץ
+        formData.append('PlaylistId', selectedPlaylist.playlistId.toString());
 
         try {
-            await uploadSong(formData).unwrap();
+            // התאמה למבנה הפרמטרים החדש ב-API
+            await uploadSong({ 
+                formData, 
+                playlistId: selectedPlaylist.playlistId.toString() 
+            }).unwrap();
+            
             alert("השיר הועלה בהצלחה!");
             if (event.target) event.target.value = ''; 
         } catch (err) {
@@ -58,6 +64,9 @@ const LibraryPage = () => {
 
     if (isLoading) return <div className="loading">טוען ספרייה...</div>;
     if (error) return <div className="error">חלה שגיאה. וודא שאתה מחובר.</div>;
+
+    // מציאת הנתונים המעודכנים ביותר של הפלייליסט הנבחר מתוך רשימת הפלייליסטים הכללית
+    const activePlaylistData = playlists?.find((pl: any) => pl.playlistId === selectedPlaylist?.playlistId);
 
     return (
         <div className="library-layout">
@@ -90,7 +99,7 @@ const LibraryPage = () => {
                 {selectedPlaylist ? (
                     <div style={{ padding: '20px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <Typography variant="h4">{selectedPlaylist.playlistName}</Typography>
+                            <Typography variant="h4">{activePlaylistData?.playlistName || selectedPlaylist.playlistName}</Typography>
                             
                             <div>
                                 <input 
@@ -111,7 +120,6 @@ const LibraryPage = () => {
                             </div>
                         </div>
 
-                        {/* טבלת MUI משודרגת */}
                         <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                             <Table>
                                 <TableHead>
@@ -122,11 +130,11 @@ const LibraryPage = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {selectedPlaylist.playlistSongs?.map((ps: any, index: number) => (
+                                    {/* רינדור מתוך הנתונים המעודכנים (activePlaylistData) */}
+                                    {activePlaylistData?.playlistSongs?.map((ps: any, index: number) => (
                                         <TableRow 
                                             key={ps.song.songId} 
                                             hover
-                                            // 2. עדכון השיר ב-Redux בלחיצה
                                             onClick={() => dispatch(setCurrentSong(ps.song))}
                                             sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(255,255,255,0.08)' } }}
                                         >
@@ -149,7 +157,6 @@ const LibraryPage = () => {
                 )}
             </main>
 
-            {/* נגן בתחתית המסך */}
             {currentSong && (
                 <footer className="player-bar">
                     <div className="song-info">

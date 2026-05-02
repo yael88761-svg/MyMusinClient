@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useSignupMutation } from './userApi';
 import { loginSuccess } from './userSlice';
-import { playlistApi } from '../features/playlist/playlistApi';
-import { songApi } from '../features/song/songApi';
+import type { playlistApi } from '../features/playlist/playlistApi';
+import type { songApi } from '../features/song/songApi';
 
 const Signup: React.FC = () => {
   const [userName, setUserName] = useState(''); // שינוי ל-userName כדי להתאים ל-Controller

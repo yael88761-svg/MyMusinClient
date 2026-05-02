@@ -33,6 +33,11 @@ export const playlistApi = createApi({
       }),
       invalidatesTags: ['Playlists'],
     }),
+          // בתוך playlistApi.ts
+      getPlaylistById: builder.query<any, string>({
+        query: (id) => `Playlist/${id}`,
+        providesTags: (result, error, id) => [{ type: 'Playlists', id }],
+      }),
   }),
 });
 
